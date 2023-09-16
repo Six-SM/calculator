@@ -1,0 +1,2 @@
+GET http://localhost:6969/api/history
+Content-Type: application/json
