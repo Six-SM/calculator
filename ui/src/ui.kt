@@ -31,7 +31,7 @@ val symbols = listOf(
     "1",
     "2",
     "3",
-    "0",
+    "⌫",
     "=",
     "4",
     "5",
@@ -43,12 +43,14 @@ val symbols = listOf(
     "9",
     "*",
     "/",
+    "0",
     "(",
     ")",
     "<-",
-    "->",
-    "⌫"
+    "->"
 )
+
+val operation_symbols = listOf('+', '-', '/', '*', ')', '(', '=')
 
 val previous_expressions = listOf(
     "aaa",
@@ -95,9 +97,9 @@ fun RunMain() {
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .width(400.dp)
-                    .absolutePadding(10.dp, 100.dp, 10.dp, 0.dp)
+                    .absolutePadding(50.dp, 100.dp, 10.dp, 0.dp)
                     .background(Color(0xFFF3E8D3))
-                    .padding(30.dp).height(200.dp),
+                    .padding(50.dp).height(200.dp),
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -108,12 +110,12 @@ fun RunMain() {
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
                     .fillMaxSize()
-                    .absolutePadding(10.dp, 80.dp, 10.dp, 20.dp)
+                    .absolutePadding(50.dp, 70.dp, 10.dp, 30.dp)
             ) {
                 items(symbols.size) {
                     Button(
                         onClick = {
-                            if (it <= 16) {
+                            if (symbols[it][0].isDigit() || (operation_symbols.contains(symbols[it][0]) && symbols[it].length == 1)) {
                                 if (current_position < current_expression.length - 1) {
                                     current_expression =
                                         current_expression.take(current_position + 1) + (symbols[it]) + current_expression.substring(
@@ -154,7 +156,11 @@ fun RunMain() {
 
 
                         modifier = Modifier.size(60.dp),
-                        colors = ButtonDefaults.buttonColors(Color(0xFFEBD7B2)),
+                        colors = if (it % 5 < 3) {
+                            ButtonDefaults.buttonColors(Color(0xFFEBD7B2))
+                        } else {
+                            ButtonDefaults.buttonColors(Color(0xFFF2B179))
+                        },
                         shape = RoundedCornerShape(CornerSize(10))
 
                     )
@@ -182,22 +188,22 @@ fun RunMain() {
             columns = GridCells.Fixed(1),
             horizontalArrangement = Arrangement.spacedBy(20.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp),
-            modifier = Modifier.fillMaxSize().absolutePadding(left = 50.dp, right = 50.dp, top = 90.dp, bottom = 60.dp),
+            modifier = Modifier.fillMaxSize().absolutePadding(left = 30.dp, right = 30.dp, top = 90.dp, bottom = 60.dp),
             content = {
                 items(previous_expressions.size) {
                     Button(
                         onClick = {}, //TODO
                         modifier = Modifier
-                            .width(400.dp)
-                            .absolutePadding(10.dp, 10.dp, 10.dp, 0.dp)
+                            .width(200.dp)
+                            .absolutePadding(30.dp, 10.dp, 10.dp, 0.dp)
                             .background(Color(0xFFF3E8D3))
                             .height(60.dp),
                         colors = ButtonDefaults.buttonColors(Color(0xFFF3E8D3)),
                     ) {
-
                         Text(
                             previous_expressions[it],
                             fontSize = 25.sp,
+                            color = Color(0xFF776E65)
                         )
 
                     }
@@ -222,7 +228,7 @@ fun App() {
 
 fun main() = application {
     val windowState = rememberWindowState(height = 800.dp, width = 900.dp)
-    Window(onCloseRequest = ::exitApplication, state = windowState) {
+    Window(onCloseRequest = ::exitApplication, state = windowState, title = "SIX-SM Calculator") {
         window.minimumSize = Dimension(900, 800)
         App()
     }
