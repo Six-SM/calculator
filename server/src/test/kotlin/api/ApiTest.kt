@@ -1,17 +1,17 @@
-package org.ssm.api
+package api
 
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import io.ktor.util.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import org.ssm.api.models.Calculation
 import org.ssm.server.plugins.configureHTTP
 import org.ssm.server.plugins.configureRouting
 import org.ssm.server.plugins.configureSerialization
 import org.ssm.server.plugins.json
-import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class ApiTest {
     private fun decodeHistory(body: String): List<Calculation> {
