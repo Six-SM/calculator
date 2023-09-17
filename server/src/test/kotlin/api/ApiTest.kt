@@ -13,7 +13,7 @@ import org.ssm.server.plugins.configureRouting
 import org.ssm.server.plugins.configureSerialization
 import org.ssm.server.plugins.json
 
-// TODO: fix tests for result when CalculationService is implemented
+
 class ApiTest {
     private fun decodeHistory(body: String): CalculationListResponse {
         return json.decodeFromString<CalculationListResponse>(body)
