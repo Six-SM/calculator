@@ -1,4 +1,4 @@
-package org.ssm.plugins
+package org.ssm.server.plugins
 
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
