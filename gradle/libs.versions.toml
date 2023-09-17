@@ -1,15 +1,17 @@
 [versions]
 junitVersion = "5.9.1"
 ktorVersion="2.3.4"
-kotlinSerializationVersion="1.9.10"
+kotlinSerializationPluginVersion="1.9.10"
+kotlinSerializationVersion="1.6.0"
 logbackVersion="1.4.11"
 
 [libraries]
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junitVersion" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junitVersion" }
+kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinSerializationVersion" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logbackVersion" }
 
 
 [plugins]
-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerializationVersion" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerializationPluginVersion" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktorVersion" }

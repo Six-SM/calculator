@@ -6,8 +6,9 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.encodeToString
-import org.ssm.api.models.Calculation
+import org.ssm.api.CalculationRequest
 import org.ssm.server.db.TemporaryStorage
+import org.ssm.server.service.CalculationService
 
 fun Application.configureRouting() {
     routing {
@@ -19,9 +20,10 @@ fun Application.configureRouting() {
 
         // Returns the result of the calculation as a string
         post("/api/calculate") {
-            val calculation = call.receive<Calculation>()
-            TemporaryStorage.save(calculation)
-            call.respond(HttpStatusCode.OK, calculation.result)
+            val calculationRequest = call.receive<CalculationRequest>()
+            val calculationResponse = CalculationService.calculate(calculationRequest.expression)
+            TemporaryStorage.save(calculationRequest, calculationResponse)
+            call.respond(HttpStatusCode.OK, calculationResponse.result)
         }
     }
 }
