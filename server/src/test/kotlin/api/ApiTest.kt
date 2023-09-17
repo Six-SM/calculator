@@ -41,7 +41,7 @@ class ApiTest {
             body = """{"expression":"1+1"}"""
         }.apply {
             assertEquals(HttpStatusCode.OK, status)
-            assertEquals("error", bodyAsText())
+            assertEquals("2", bodyAsText())
         }
 
         client.get("/api/history").apply {
@@ -50,7 +50,7 @@ class ApiTest {
             val decoded = decodeHistory(bodyAsText())
             assertEquals(1, decoded.history.size)
             assertEquals("1+1", decoded.history[0].expression)
-            assertEquals("error", decoded.history[0].result)
+            assertEquals("2", decoded.history[0].result)
         }
 
         client.post("/api/calculate") {
@@ -60,7 +60,7 @@ class ApiTest {
             assertEquals(HttpStatusCode.OK, status)
 
 
-            assertEquals("error", bodyAsText())
+            assertEquals("3", bodyAsText())
         }
 
         client.get("/api/history").apply {
@@ -69,9 +69,9 @@ class ApiTest {
             val decoded = decodeHistory(bodyAsText())
             assertEquals(2, decoded.history.size)
             assertEquals("1+1", decoded.history[0].expression)
-            assertEquals("error", decoded.history[0].result)
+            assertEquals("2", decoded.history[0].result)
             assertEquals("1+2", decoded.history[1].expression)
-            assertEquals("error", decoded.history[1].result)
+            assertEquals("3", decoded.history[1].result)
         }
     }
 }
