@@ -1,14 +1,18 @@
-package org.ssm
+package org.ssm.api
 
-import org.ssm.models.Calculation
-import org.ssm.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import io.ktor.util.*
 import org.junit.FixMethodOrder
-import kotlin.test.*
+import org.ssm.api.models.Calculation
+import org.ssm.server.plugins.configureHTTP
+import org.ssm.server.plugins.configureRouting
+import org.ssm.server.plugins.configureSerialization
+import org.ssm.server.plugins.json
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @FixMethodOrder(org.junit.runners.MethodSorters.NAME_ASCENDING)
 class ApiTest {

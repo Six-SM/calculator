@@ -1,11 +1,11 @@
-package org.ssm.models
+package org.ssm.api.models
 
-import org.ssm.service.calculate
-import java.util.UUID
+import org.ssm.server.service.CalculationService
+import java.util.*
 
 @kotlinx.serialization.Serializable
 data class Calculation(val expression: String) {
-    val result: String = calculate(expression)
+    val result: String = CalculationService.calculate(expression)
     val id: String = UUID.randomUUID().toString()
     val timestamp: String = System.currentTimeMillis().toString()
 }

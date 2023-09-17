@@ -12,7 +12,7 @@ group = "com.example"
 version = "0.0.1"
 
 application {
-    mainClass.set("org.ssm.ServerKt")
+    mainClass.set("org.ssm.server.ServerKt")
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
