@@ -5,7 +5,6 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import io.ktor.util.*
-import org.junit.FixMethodOrder
 import org.ssm.api.models.Calculation
 import org.ssm.server.plugins.configureHTTP
 import org.ssm.server.plugins.configureRouting
@@ -14,28 +13,14 @@ import org.ssm.server.plugins.json
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-@FixMethodOrder(org.junit.runners.MethodSorters.NAME_ASCENDING)
 class ApiTest {
-    @Test
-    fun test1EmptyHistory() = testApplication {
-        application {
-            configureHTTP()
-            configureRouting()
-            configureSerialization()
-        }
-        client.get("/api/history").apply {
-            assertEquals(HttpStatusCode.OK, status)
-            assertEquals("[]", bodyAsText())
-        }
-    }
-
-    fun decodeHistory(body: String): List<Calculation> {
+    private fun decodeHistory(body: String): List<Calculation> {
         return json.decodeFromString<List<Calculation>>(body)
     }
 
     @OptIn(InternalAPI::class)
     @Test
-    fun test2Calculate() = testApplication {
+    fun testGeneral() = testApplication {
         application {
             configureHTTP()
             configureRouting()
@@ -47,6 +32,7 @@ class ApiTest {
         }.apply {
             val decoded = decodeHistory(bodyAsText())
             assertEquals(0, decoded.size)
+            assertEquals("[]", bodyAsText())
         }
 
         client.post("/api/calculate") {
