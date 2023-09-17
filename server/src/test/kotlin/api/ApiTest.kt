@@ -7,15 +7,16 @@ import io.ktor.server.testing.*
 import io.ktor.util.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.ssm.api.models.Calculation
+import org.ssm.api.CalculationListResponse
 import org.ssm.server.plugins.configureHTTP
 import org.ssm.server.plugins.configureRouting
 import org.ssm.server.plugins.configureSerialization
 import org.ssm.server.plugins.json
 
+// TODO: fix tests for result when CalculationService is implemented
 class ApiTest {
-    private fun decodeHistory(body: String): List<Calculation> {
-        return json.decodeFromString<List<Calculation>>(body)
+    private fun decodeHistory(body: String): CalculationListResponse {
+        return json.decodeFromString<CalculationListResponse>(body)
     }
 
     @OptIn(InternalAPI::class)
@@ -31,8 +32,8 @@ class ApiTest {
             assertEquals(HttpStatusCode.OK, status)
         }.apply {
             val decoded = decodeHistory(bodyAsText())
-            assertEquals(0, decoded.size)
-            assertEquals("[]", bodyAsText())
+            assertEquals(0, decoded.history.size)
+            assertEquals("{\"history\":[]}", bodyAsText())
         }
 
         client.post("/api/calculate") {
@@ -40,16 +41,16 @@ class ApiTest {
             body = """{"expression":"1+1"}"""
         }.apply {
             assertEquals(HttpStatusCode.OK, status)
-            assertEquals("1+1", bodyAsText())
+            assertEquals("error", bodyAsText())
         }
 
         client.get("/api/history").apply {
             assertEquals(HttpStatusCode.OK, status)
         }.apply {
             val decoded = decodeHistory(bodyAsText())
-            assertEquals(1, decoded.size)
-            assertEquals("1+1", decoded[0].expression)
-            assertEquals("1+1", decoded[0].result)
+            assertEquals(1, decoded.history.size)
+            assertEquals("1+1", decoded.history[0].expression)
+            assertEquals("error", decoded.history[0].result)
         }
 
         client.post("/api/calculate") {
@@ -57,18 +58,20 @@ class ApiTest {
             body = """{"expression":"1+2"}"""
         }.apply {
             assertEquals(HttpStatusCode.OK, status)
-            assertEquals("1+2", bodyAsText())
+
+
+            assertEquals("error", bodyAsText())
         }
 
         client.get("/api/history").apply {
             assertEquals(HttpStatusCode.OK, status)
         }.apply {
             val decoded = decodeHistory(bodyAsText())
-            assertEquals(2, decoded.size)
-            assertEquals("1+1", decoded[0].expression)
-            assertEquals("1+1", decoded[0].result)
-            assertEquals("1+2", decoded[1].expression)
-            assertEquals("1+2", decoded[1].result)
+            assertEquals(2, decoded.history.size)
+            assertEquals("1+1", decoded.history[0].expression)
+            assertEquals("error", decoded.history[0].result)
+            assertEquals("1+2", decoded.history[1].expression)
+            assertEquals("error", decoded.history[1].result)
         }
     }
 }

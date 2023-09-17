@@ -15,6 +15,7 @@ application {
 
 // TODO: move all these dependencies to libs.version.toml
 dependencies {
+    implementation(project(":api"))
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-server-compression-jvm")
     implementation("io.ktor:ktor-server-content-negotiation-jvm")

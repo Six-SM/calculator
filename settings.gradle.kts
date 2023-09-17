@@ -1,5 +1,6 @@
 rootProject.name = "calculator"
 
 include(
-    "server"
+    "server",
+    "api"
 )
