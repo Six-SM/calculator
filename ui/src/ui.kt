@@ -13,13 +13,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberWindowState
 
 val symbols = listOf(
     "1",
@@ -50,17 +54,40 @@ fun ButtonClick() {
     var current_position by remember { mutableStateOf(0) }
 
     Text(
-        text = current_expression,
+
+        buildAnnotatedString {
+            append(current_expression.take(current_position))
+
+            if (current_position < current_expression.length) {
+                withStyle(style = SpanStyle(color = Color.Blue)) {
+                    append(current_expression[current_position])
+                }
+            }
+            if (current_position < current_expression.length - 1) {
+                append(current_expression.substring(current_position + 1, current_expression.length))
+            }
+        },
         textAlign = TextAlign.Center,
         modifier = Modifier
             .width(150.dp)
             .absolutePadding(10.dp, 200.dp, 10.dp, 400.dp)
             .background(Color(0xFFF3E8D3))
             .padding(30.dp),
+        fontSize = 25.sp,
+        fontWeight = FontWeight.Bold
+
+
+        /*   text = current_expression,
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+           .width(150.dp)
+           .absolutePadding(10.dp, 200.dp, 10.dp, 400.dp)
+           .background(Color(0xFFF3E8D3))
+           .padding(30.dp),
         style = TextStyle(
-            fontSize = 25.sp,
-            fontWeight = FontWeight.Bold
-        )
+           fontSize = 25.sp,
+           fontWeight = FontWeight.Bold
+        ) */
     )
 
     LazyVerticalGrid(
@@ -145,14 +172,15 @@ fun App() {
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFF9F2E7)
+        color = Color(0xFFF9F2E7),
     ) {
         ButtonClick()
     }
 }
 
 fun main() = application {
-    Window(onCloseRequest = ::exitApplication) {
+    val windowState = rememberWindowState(height = 1000.dp, width = 700.dp)
+    Window(onCloseRequest = ::exitApplication, state = windowState) {
         App()
     }
 }
