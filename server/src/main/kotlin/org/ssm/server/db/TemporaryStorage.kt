@@ -12,7 +12,7 @@ class TemporaryStorage(url: String, username: String, password: String) {
 
     init {
         val sql = "create table if not exists t_requests_history(id varchar primary key, expression varchar, result varchar, timestamp varchar);"
-        database.useConnection { conn -> conn.prepareStatement(sql) }
+        database.useConnection { conn -> conn.prepareStatement(sql).use { it.executeQuery() } }
     }
 
     fun save(request: CalculationRequest, response: CalculationResponse): Int = 
