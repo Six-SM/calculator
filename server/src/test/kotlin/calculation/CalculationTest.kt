@@ -1,8 +1,8 @@
 package calculation
 
 import com.github.keelar.exprk.ExpressionException
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.ssm.server.service.CalculationService
@@ -16,12 +16,12 @@ class CalculationTest {
             CalculationService.calculateResult("0"),
         )
 
-        Assertions.assertThrows(ExpressionException::class.java) {
+        assertThrows(ExpressionException::class.java) {
             CalculationService.calculateResult("0+").getOrThrow()
         }
 
 
-        Assertions.assertThrows(ArithmeticException::class.java) {
+        assertThrows(ArithmeticException::class.java) {
             CalculationService.calculateResult("1 / 0").getOrThrow()
         }
     }
