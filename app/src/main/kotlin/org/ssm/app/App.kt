@@ -1,3 +1,5 @@
+package org.ssm.app
+
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -52,14 +54,14 @@ var recent_requests = mutableStateListOf( //TODO: потом сделать muta
     "MADE BY SIX SM-MASTERS"
 )
 
-val COLUMN_WIDTH = 400
-val LEFT_PADDING = 50
-val BUTTON_CALC_SIZE = 60
+const val COLUMN_WIDTH = 400
+const val LEFT_PADDING = 50
+const val BUTTON_CALC_SIZE = 60
 
 
 fun updateRecentRequestList(expression: String, result: String) {
-    recent_requests.add(0, expression + " = $result")
-    //TODO: переприсваивание recent_requests из //List<CalculationHistoryRequest>
+    recent_requests.add(0, "$expression = $result")
+    //TODO: переприсваивание org.ssm.app.getRecent_requests из //List<CalculationHistoryRequest>
 }
 
 fun makeRequest(expression: String): String {
@@ -72,7 +74,7 @@ fun makeRequest(expression: String): String {
 
 @Composable
 
-fun drawTextOnButtons(it : Int) {
+fun drawTextOnButtons(it: Int) {
     return Text(
         text = symbols[it],
         color = Color.Black,
@@ -91,23 +93,23 @@ fun drawTextOnButtons(it : Int) {
 
 
 @Composable
-fun RunMain() {
-    var current_expression by remember { mutableStateOf("") }
-    var current_position by remember { mutableStateOf(0) }
+fun runMain() {
+    var currentExpression by remember { mutableStateOf("") }
+    var currentPosition by remember { mutableStateOf(0) }
 
     Row {
         Column(modifier = Modifier.width(COLUMN_WIDTH.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 buildAnnotatedString {
-                    append(current_expression.take(current_position))
+                    append(currentExpression.take(currentPosition))
 
-                    if (current_position < current_expression.length) {
+                    if (currentPosition < currentExpression.length) {
                         withStyle(style = SpanStyle(color = Color(0xFFf59563))) {
-                            append(current_expression[current_position])
+                            append(currentExpression[currentPosition])
                         }
                     }
-                    if (current_position < current_expression.length - 1) {
-                        append(current_expression.substring(current_position + 1, current_expression.length))
+                    if (currentPosition < currentExpression.length - 1) {
+                        append(currentExpression.substring(currentPosition + 1, currentExpression.length))
                     }
                 },
                 textAlign = TextAlign.Center,
@@ -132,50 +134,51 @@ fun RunMain() {
                     Button(
                         onClick = {
                             if (symbols[it] == "=") {
-                                val result = makeRequest(current_expression)
+                                val result = makeRequest(currentExpression)
                                 if (result.all { it.isDigit() }) {
-                                    current_expression += " = $result"
+                                    currentExpression += " = $result"
                                 } else {
-                                    current_expression = result
+                                    currentExpression = result
                                 }
+                              //  currentPosition = currentExpression.length - 1
 
                             } else
                                 if (symbols[it][0].isDigit() || (operation_symbols.contains(symbols[it][0]) && symbols[it].length == 1)) {
-                                    if (current_position < current_expression.length - 1) {
-                                        current_expression =
-                                            current_expression.take(current_position + 1) + (symbols[it]) + current_expression.substring(
-                                                current_position + 1,
-                                                current_expression.length
+                                    if (currentPosition < currentExpression.length - 1) {
+                                        currentExpression =
+                                            currentExpression.take(currentPosition + 1) + (symbols[it]) + currentExpression.substring(
+                                                currentPosition + 1,
+                                                currentExpression.length
                                             )
                                     } else {
-                                        current_expression += symbols[it]
+                                        currentExpression += symbols[it]
                                     }
-                                    current_position++
+                                    currentPosition++
                                 } else {
                                     if (symbols[it] == "<-") {
-                                        current_position--
-                                        current_position = maxOf(current_position, 0)
+                                        currentPosition--
+                                        currentPosition = maxOf(currentPosition, 0)
                                     } else if (symbols[it] == "->") {
-                                        current_position++
-                                        current_position = minOf(current_expression.length - 1, current_position)
+                                        currentPosition++
+                                        currentPosition = minOf(currentExpression.length - 1, currentPosition)
 
 
-                                    } else if (symbols[it] == "⌫" && current_expression.isNotEmpty()) {
-                                        var tmp = current_expression.take(current_position)
-                                        if (current_position < current_expression.length - 1) {
-                                            tmp += current_expression.substring(
-                                                current_position + 1,
-                                                current_expression.length
+                                    } else if (symbols[it] == "⌫" && currentExpression.isNotEmpty()) {
+                                        var tmp = currentExpression.take(currentPosition)
+                                        if (currentPosition < currentExpression.length - 1) {
+                                            tmp += currentExpression.substring(
+                                                currentPosition + 1,
+                                                currentExpression.length
                                             )
                                         }
-                                        current_expression = tmp
-                                        current_position =
-                                            minOf(current_expression.length - 1, current_position)
+                                        currentExpression = tmp
+                                        currentPosition =
+                                            minOf(currentExpression.length - 1, currentPosition)
                                     }
                                 }
 
-                            if (current_expression.isEmpty()) {
-                                current_position = 0
+                            if (currentExpression.isEmpty()) {
+                                currentPosition = 0
                             }
                         },
 
@@ -196,37 +199,60 @@ fun RunMain() {
             }
         }
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(1),
-            horizontalArrangement = Arrangement.spacedBy(20.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-            modifier = Modifier.fillMaxSize()
-                .absolutePadding(left = 30.dp, right = 30.dp, top = 90.dp, bottom = BUTTON_CALC_SIZE.dp),
-            content = {
-                items(recent_requests.size) {
-                    Button(
-                        onClick = {
-                            current_expression = recent_requests[it]
-                            current_position = current_expression.length - 1
-                        }, //TODO: должен общаться с предыдущими запросами
-                        modifier = Modifier
-                            .width(200.dp)
-                            .absolutePadding(30.dp, 10.dp, 10.dp, 0.dp)
-                            .background(Color(0xFFF3E8D3))
-                            .height(BUTTON_CALC_SIZE.dp),
-                        colors = ButtonDefaults.buttonColors(Color(0xFFF3E8D3)),
-                    ) {
-                        Text(
-                            recent_requests[it],
-                            fontSize = 25.sp,
-                            color = Color(0xFF776E65)
-                        )
+        Column(modifier = Modifier.width(500.dp), horizontalAlignment = Alignment.CenterHorizontally) {
 
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(1),
+                horizontalArrangement = Arrangement.spacedBy(20.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier.width(500.dp).height(610.dp).absolutePadding(left = 30.dp, right = 30.dp, top = 90.dp, bottom = 0.dp),
+                content = {
+                    items(recent_requests.size) {
+                        Button(
+                            onClick = {
+                                currentExpression = recent_requests[it]
+                                currentPosition = currentExpression.length - 1
+                            }, //TODO: должен общаться с предыдущими запросами
+                            modifier = Modifier
+                                .width(200.dp)
+                                .absolutePadding(30.dp, 10.dp, 10.dp, 0.dp)
+                                .background(Color(0xFFF3E8D3))
+                                .height(BUTTON_CALC_SIZE.dp),
+                            colors = ButtonDefaults.buttonColors(Color(0xFFF3E8D3)),
+                        ) {
+                            Text(
+                                recent_requests[it],
+                                fontSize = 23.sp,
+                                color = Color(0xFF776E65)
+                            )
+
+                        }
                     }
+
                 }
+            )
+
+            Button(
+                onClick = {
+                    //TODO: update истории
+                },
+                modifier = Modifier
+                    .width(460.dp)
+                     .absolutePadding(40.dp, 30.dp, 20.dp, 13.dp)
+                    .background(Color(0xFFF3E8D3))
+                    .height(85.dp),
+                colors = ButtonDefaults.buttonColors(Color(0xFFF2B179)),
+            ) {
+                Text(
+                    "UPDATE RECENT REQUESTS",
+                    fontSize = 23.sp,
+                    color = Color(0xFF776E65)
+                )
 
             }
-        )
+
+
+        }
     }
 }
 
@@ -238,7 +264,7 @@ fun App() {
         modifier = Modifier.fillMaxSize(),
         color = Color(0xFFF9F2E7),
     ) {
-        RunMain()
+        runMain()
     }
 }
 
