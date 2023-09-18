@@ -48,25 +48,8 @@ val symbols = listOf(
 
 val operation_symbols = listOf('+', '-', '/', '*', ')', '(', '=')
 
-var recent_requests = mutableStateListOf(
-    "aaa",
-    "bbb",
-    "21479",
-    "2507",
-    "888",
-    "kek",
-    "aaa",
-    "bbb",
-    "21479",
-    "2507",
-    "888",
-    "kek",
-    "aaa",
-    "bbb",
-    "21479",
-    "2507",
-    "888",
-    "kek"
+var recent_requests = mutableStateListOf( //TODO: потом сделать mutableStateFlow для подгрузки
+    " MADE BY SIX SM-MASTERS"
 )
 
 val COLUMN_WIDTH = 400
