@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import org.ssm.api.CalculationRequest
 import java.awt.Dimension
 
 val symbols = listOf(
@@ -77,6 +78,11 @@ val COLUMN_WIDTH = 400
 val LEFT_PADDING = 50
 val BUTTON_CALC_SIZE = 60
 
+fun makeRequest(expression: String): String {
+    //TODO: отправляю запрос на сервер, передавая current_expression
+    CalculationRequest(expression)
+    return "25"
+}
 
 
 @Composable
@@ -120,39 +126,49 @@ fun RunMain() {
                 items(symbols.size) {
                     Button(
                         onClick = {
-                            if (symbols[it][0].isDigit() || (operation_symbols.contains(symbols[it][0]) && symbols[it].length == 1)) {
-                                if (current_position < current_expression.length - 1) {
-                                    current_expression =
-                                        current_expression.take(current_position + 1) + (symbols[it]) + current_expression.substring(
-                                            current_position + 1,
-                                            current_expression.length
-                                        )
-                                } else {
-                                    current_expression += symbols[it]
+                            if (symbols[it] == "=") {
+                                val result = makeRequest(current_expression)
+                                if (result.all { it.isDigit() }) {
+                                    current_expression += " = $result"
                                 }
-                                current_position++
-                            } else {
-                                if (symbols[it] == "<-") {
-                                    current_position--
-                                    current_position = maxOf(current_position, 0)
-                                } else if (symbols[it] == "->") {
-                                    current_position++
-                                    current_position = minOf(current_expression.length - 1, current_position)
+                                else {
+                                    current_expression = result
+                                }
 
-
-                                } else if (symbols[it] == "⌫" && current_expression.isNotEmpty()) {
-                                    var tmp = current_expression.take(current_position)
+                            } else
+                                if (symbols[it][0].isDigit() || (operation_symbols.contains(symbols[it][0]) && symbols[it].length == 1)) {
                                     if (current_position < current_expression.length - 1) {
-                                        tmp += current_expression.substring(
-                                            current_position + 1,
-                                            current_expression.length
-                                        )
+                                        current_expression =
+                                            current_expression.take(current_position + 1) + (symbols[it]) + current_expression.substring(
+                                                current_position + 1,
+                                                current_expression.length
+                                            )
+                                    } else {
+                                        current_expression += symbols[it]
                                     }
-                                    current_expression = tmp
-                                    current_position =
-                                        minOf(current_expression.length - 1, current_position)
+                                    current_position++
+                                } else {
+                                    if (symbols[it] == "<-") {
+                                        current_position--
+                                        current_position = maxOf(current_position, 0)
+                                    } else if (symbols[it] == "->") {
+                                        current_position++
+                                        current_position = minOf(current_expression.length - 1, current_position)
+
+
+                                    } else if (symbols[it] == "⌫" && current_expression.isNotEmpty()) {
+                                        var tmp = current_expression.take(current_position)
+                                        if (current_position < current_expression.length - 1) {
+                                            tmp += current_expression.substring(
+                                                current_position + 1,
+                                                current_expression.length
+                                            )
+                                        }
+                                        current_expression = tmp
+                                        current_position =
+                                            minOf(current_expression.length - 1, current_position)
+                                    }
                                 }
-                            }
 
                             if (current_expression.isEmpty()) {
                                 current_position = 0

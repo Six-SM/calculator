@@ -15,6 +15,7 @@ repositories {
 
 dependencies {
     implementation(compose.desktop.currentOs)
+    implementation(project(mapOf("path" to ":api")))
 }
 
 compose.desktop {
