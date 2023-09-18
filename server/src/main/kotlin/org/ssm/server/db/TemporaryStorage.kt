@@ -10,6 +10,11 @@ import org.ktorm.dsl.*
 class TemporaryStorage(url: String, username: String, password: String) {
     val database = Database.connect(url, user=username, password=password)
 
+    init {
+        val sql = "create table if not exists t_requests_history(id varchar primary key, expression varchar, result varchar, timestamp varchar);"
+        database.useConnection { conn -> conn.prepareStatement(sql) }
+    }
+
     fun save(request: CalculationRequest, response: CalculationResponse): Int = 
         database.insert(RequestsHistory) {
             set(it.expression, request.expression)
