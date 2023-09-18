@@ -1,5 +1,7 @@
 package org.ssm.app.handlers
 
+import kotlinx.coroutines.runBlocking
+import org.ssm.app.CalculatorClient
 import kotlin.math.max
 import kotlin.math.min
 
@@ -7,9 +9,12 @@ fun cutExpression(expression: String): String {
     return expression.takeWhile { it != '=' }
 }
 
-fun handleEqualButton(calculatorState: CalculatorState): CalculatorState {
-    // TODO: send request
-    return CalculatorState("${cutExpression(calculatorState.expression)}=25", calculatorState.position)
+fun handleEqualButton(calculatorState: CalculatorState, client: CalculatorClient): CalculatorState {
+    val result = runBlocking {
+        client.calculate(calculatorState.expression)
+    } ?: "ERROR"
+
+    return CalculatorState("${cutExpression(calculatorState.expression)}=$result", calculatorState.position)
 }
 
 fun handleLeftArrow(calculatorState: CalculatorState): CalculatorState {
@@ -48,12 +53,13 @@ fun handleDeletion(calculatorState: CalculatorState): CalculatorState {
     return CalculatorState(newExpression, min(calculatorState.position, newExpression.length - 1))
 }
 
-fun updateRecentRequest(): List<String> {
-    // TODO: send request
-    return listOf(
-        "1+1=2",
-        "25*25=625",
-        "167+78*(82+3)=6797",
-        "1+=error"
-    )
+fun updateRecentRequest(client: CalculatorClient): List<String> {
+    val result = runBlocking {
+        client.getHistory()
+    }
+
+    return result
+        ?.history
+        ?.map { "${it.expression}=${it.result}" }
+        ?: listOf("ERROR")
 }
