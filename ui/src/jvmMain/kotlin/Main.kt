@@ -73,6 +73,11 @@ val previous_expressions = listOf(
     "kek"
 )
 
+val COLUMN_WIDTH = 400
+val LEFT_PADDING = 50
+val BUTTON_CALC_SIZE = 60
+
+
 
 @Composable
 fun RunMain() {
@@ -80,7 +85,7 @@ fun RunMain() {
     var current_position by remember { mutableStateOf(0) }
 
     Row {
-        Column(modifier = Modifier.width(400.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(modifier = Modifier.width(COLUMN_WIDTH.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 buildAnnotatedString {
                     append(current_expression.take(current_position))
@@ -96,10 +101,10 @@ fun RunMain() {
                 },
                 textAlign = TextAlign.Center,
                 modifier = Modifier
-                    .width(400.dp)
-                    .absolutePadding(50.dp, 100.dp, 10.dp, 0.dp)
+                    .width(COLUMN_WIDTH.dp)
+                    .absolutePadding(LEFT_PADDING.dp, 100.dp, 10.dp, 0.dp)
                     .background(Color(0xFFF3E8D3))
-                    .padding(50.dp).height(200.dp),
+                    .padding(LEFT_PADDING.dp).height(200.dp),
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -110,7 +115,7 @@ fun RunMain() {
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
                     .fillMaxSize()
-                    .absolutePadding(50.dp, 70.dp, 10.dp, 30.dp)
+                    .absolutePadding(LEFT_PADDING.dp, 70.dp, 10.dp, 30.dp)
             ) {
                 items(symbols.size) {
                     Button(
@@ -155,7 +160,7 @@ fun RunMain() {
                         },
 
 
-                        modifier = Modifier.size(60.dp),
+                        modifier = Modifier.size(BUTTON_CALC_SIZE.dp),
                         colors = if (it % 5 < 3) {
                             ButtonDefaults.buttonColors(Color(0xFFEBD7B2))
                         } else {
@@ -188,7 +193,8 @@ fun RunMain() {
             columns = GridCells.Fixed(1),
             horizontalArrangement = Arrangement.spacedBy(20.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp),
-            modifier = Modifier.fillMaxSize().absolutePadding(left = 30.dp, right = 30.dp, top = 90.dp, bottom = 60.dp),
+            modifier = Modifier.fillMaxSize()
+                .absolutePadding(left = 30.dp, right = 30.dp, top = 90.dp, bottom = BUTTON_CALC_SIZE.dp),
             content = {
                 items(previous_expressions.size) {
                     Button(
@@ -197,7 +203,7 @@ fun RunMain() {
                             .width(200.dp)
                             .absolutePadding(30.dp, 10.dp, 10.dp, 0.dp)
                             .background(Color(0xFFF3E8D3))
-                            .height(60.dp),
+                            .height(BUTTON_CALC_SIZE.dp),
                         colors = ButtonDefaults.buttonColors(Color(0xFFF3E8D3)),
                     ) {
                         Text(
@@ -226,10 +232,13 @@ fun App() {
     }
 }
 
+
+val WINDOW_SIZE = Pair(800, 900)
+
 fun main() = application {
-    val windowState = rememberWindowState(height = 800.dp, width = 900.dp)
+    val windowState = rememberWindowState(height = WINDOW_SIZE.first.dp, width = WINDOW_SIZE.second.dp)
     Window(onCloseRequest = ::exitApplication, state = windowState, title = "SIX-SM Calculator") {
-        window.minimumSize = Dimension(900, 800)
+        window.minimumSize = Dimension(WINDOW_SIZE.second, WINDOW_SIZE.first)
         App()
     }
 }
