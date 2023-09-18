@@ -23,57 +23,24 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import org.ssm.app.handlers.*
 import java.awt.Dimension
+import kotlin.math.max
 
 val symbols = listOf(
-    "1",
-    "2",
-    "3",
-    "⌫",
-    "=",
-    "4",
-    "5",
-    "6",
-    "+",
-    "-",
-    "7",
-    "8",
-    "9",
-    "*",
-    "/",
-    "0",
-    "(",
-    ")",
-    "<-",
-    "->"
+    "1", "2", "3", "⌫", "=",
+    "4", "5", "6", "+", "-",
+    "7", "8", "9", "*", "/",
+    "0", "(", ")", "<-", "->"
 )
 
-val operation_symbols = listOf('+', '-', '/', '*', ')', '(', '=')
+val operationSymbols = listOf('+', '-', '/', '*', ')', '(', '=')
 
-var recent_requests = mutableStateListOf( //TODO: потом сделать mutableStateFlow для подгрузки
+var recentRequests = mutableStateListOf(
     "MADE BY SIX SM-MASTERS"
 )
 
-const val COLUMN_WIDTH = 400
-const val LEFT_PADDING = 50
-const val BUTTON_CALC_SIZE = 60
-
-
-fun updateRecentRequestList(expression: String, result: String) {
-    recent_requests.add(0, "$expression = $result")
-    //TODO: переприсваивание org.ssm.app.getRecent_requests из //List<CalculationHistoryRequest>
-}
-
-fun makeRequest(expression: String): String {
-    //TODO: отправляю запрос на сервер, передавая expression
-    // CalculationRequest(expression) (не пон, куда передавать)
-    var result = "25"
-    updateRecentRequestList(expression, result)
-    return result //пока что так
-}
-
 @Composable
-
 fun drawTextOnButtons(it: Int) {
     return Text(
         text = symbols[it],
@@ -133,49 +100,24 @@ fun runMain() {
                 items(symbols.size) {
                     Button(
                         onClick = {
-                            if (symbols[it] == "=") {
-                                val result = makeRequest(currentExpression)
-                                if (result.all { it.isDigit() }) {
-                                    currentExpression += " = $result"
+                            val newCalculatorState = if (symbols[it] == "=") {
+                                    val newCalculatorState = handleEqualButton(CalculatorState(currentExpression, currentPosition))
+                                    recentRequests.add(0, newCalculatorState.expression)
+                                    newCalculatorState
+                                } else if (symbols[it][0].isDigit() || (operationSymbols.contains(symbols[it][0]) && symbols[it].length == 1)) {
+                                    handleSymbol(CalculatorState(currentExpression, currentPosition), symbols[it][0])
+                                } else if (symbols[it] == "<-") {
+                                    handleLeftArrow(CalculatorState(currentExpression, currentPosition))
+                                } else if (symbols[it] == "->") {
+                                    handleRightArrow(CalculatorState(currentExpression, currentPosition))
+                                } else if (symbols[it] == "⌫") {
+                                    handleDeletion(CalculatorState(currentExpression, currentPosition))
                                 } else {
-                                    currentExpression = result
+                                    // Should not happen
+                                    CalculatorState(currentExpression, currentPosition)
                                 }
-                              //  currentPosition = currentExpression.length - 1
-
-                            } else
-                                if (symbols[it][0].isDigit() || (operation_symbols.contains(symbols[it][0]) && symbols[it].length == 1)) {
-                                    if (currentPosition < currentExpression.length - 1) {
-                                        currentExpression =
-                                            currentExpression.take(currentPosition + 1) + (symbols[it]) + currentExpression.substring(
-                                                currentPosition + 1,
-                                                currentExpression.length
-                                            )
-                                    } else {
-                                        currentExpression += symbols[it]
-                                    }
-                                    currentPosition++
-                                } else {
-                                    if (symbols[it] == "<-") {
-                                        currentPosition--
-                                        currentPosition = maxOf(currentPosition, 0)
-                                    } else if (symbols[it] == "->") {
-                                        currentPosition++
-                                        currentPosition = minOf(currentExpression.length - 1, currentPosition)
-
-
-                                    } else if (symbols[it] == "⌫" && currentExpression.isNotEmpty()) {
-                                        var tmp = currentExpression.take(currentPosition)
-                                        if (currentPosition < currentExpression.length - 1) {
-                                            tmp += currentExpression.substring(
-                                                currentPosition + 1,
-                                                currentExpression.length
-                                            )
-                                        }
-                                        currentExpression = tmp
-                                        currentPosition =
-                                            minOf(currentExpression.length - 1, currentPosition)
-                                    }
-                                }
+                            currentExpression = newCalculatorState.expression
+                            currentPosition = newCalculatorState.position
 
                             if (currentExpression.isEmpty()) {
                                 currentPosition = 0
@@ -207,12 +149,12 @@ fun runMain() {
                 verticalArrangement = Arrangement.spacedBy(20.dp),
                 modifier = Modifier.width(500.dp).height(610.dp).absolutePadding(left = 30.dp, right = 30.dp, top = 90.dp, bottom = 0.dp),
                 content = {
-                    items(recent_requests.size) {
+                    items(recentRequests.size) {
                         Button(
                             onClick = {
-                                currentExpression = recent_requests[it]
-                                currentPosition = currentExpression.length - 1
-                            }, //TODO: должен общаться с предыдущими запросами
+                                currentExpression = recentRequests[it]
+                                currentPosition = max(currentExpression.indexOf('=') - 1, 0)
+                            },
                             modifier = Modifier
                                 .width(200.dp)
                                 .absolutePadding(30.dp, 10.dp, 10.dp, 0.dp)
@@ -221,11 +163,10 @@ fun runMain() {
                             colors = ButtonDefaults.buttonColors(Color(0xFFF3E8D3)),
                         ) {
                             Text(
-                                recent_requests[it],
+                                recentRequests[it],
                                 fontSize = 23.sp,
                                 color = Color(0xFF776E65)
                             )
-
                         }
                     }
 
@@ -234,7 +175,9 @@ fun runMain() {
 
             Button(
                 onClick = {
-                    //TODO: update истории
+                    val newRecentRequests = updateRecentRequest()
+                    recentRequests.clear()
+                    recentRequests.addAll(newRecentRequests)
                 },
                 modifier = Modifier
                     .width(460.dp)
@@ -248,18 +191,14 @@ fun runMain() {
                     fontSize = 23.sp,
                     color = Color(0xFF776E65)
                 )
-
             }
-
-
         }
     }
 }
 
 @Composable
 @Preview
-fun App() {
-
+fun app() {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = Color(0xFFF9F2E7),
@@ -268,13 +207,10 @@ fun App() {
     }
 }
 
-
-val WINDOW_SIZE = Pair(800, 900)
-
 fun main() = application {
     val windowState = rememberWindowState(height = WINDOW_SIZE.first.dp, width = WINDOW_SIZE.second.dp)
     Window(onCloseRequest = ::exitApplication, state = windowState, title = "SIX-SM Calculator") {
         window.minimumSize = Dimension(WINDOW_SIZE.second, WINDOW_SIZE.first)
-        App()
+        app()
     }
 }
