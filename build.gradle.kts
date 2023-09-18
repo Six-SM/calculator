@@ -10,11 +10,6 @@ tasks.wrapper {
 allprojects {
     version = "0.0.1"
 
-    repositories {
-        mavenCentral()
-        maven("https://jitpack.io")
-    }
-
     apply {
         plugin("kotlin")
     }
