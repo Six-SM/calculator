@@ -20,7 +20,7 @@ dependencies {
 
 compose.desktop {
     application {
-        mainClass = "AppKt"
+        mainClass = "org.ssm.app.AppKt"
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "calculator"
