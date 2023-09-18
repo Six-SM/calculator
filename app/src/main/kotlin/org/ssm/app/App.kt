@@ -220,7 +220,10 @@ fun RunMain() {
             content = {
                 items(recent_requests.size) {
                     Button(
-                        onClick = {}, //TODO
+                        onClick = {
+                            current_expression = recent_requests[it]
+                            current_position = current_expression.length - 1
+                        }, //TODO: должен общаться с предыдущими запросами
                         modifier = Modifier
                             .width(200.dp)
                             .absolutePadding(30.dp, 10.dp, 10.dp, 0.dp)
