@@ -49,7 +49,7 @@ val symbols = listOf(
 val operation_symbols = listOf('+', '-', '/', '*', ')', '(', '=')
 
 var recent_requests = mutableStateListOf( //TODO: потом сделать mutableStateFlow для подгрузки
-    " MADE BY SIX SM-MASTERS"
+    "MADE BY SIX SM-MASTERS"
 )
 
 val COLUMN_WIDTH = 400
@@ -58,20 +58,16 @@ val BUTTON_CALC_SIZE = 60
 
 
 fun updateRecentRequestList(expression: String, result: String) {
-
-
     recent_requests.add(0, expression + " = $result")
     //TODO: переприсваивание recent_requests из //List<CalculationHistoryRequest>
-
 }
 
 fun makeRequest(expression: String): String {
     //TODO: отправляю запрос на сервер, передавая expression
     // CalculationRequest(expression) (не пон, куда передавать)
-    updateRecentRequestList(expression, "25")
-    return "25" //пока что так
-
-
+    var result = "25"
+    updateRecentRequestList(expression, result)
+    return result //пока что так
 }
 
 
