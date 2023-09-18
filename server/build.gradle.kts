@@ -35,4 +35,6 @@ dependencies {
     implementation("org.ktorm:ktorm-core:3.6.0")
 
     testImplementation("io.ktor:ktor-server-tests-jvm")
+
+    testImplementation("org.testcontainers:postgresql:1.17.6")
 }

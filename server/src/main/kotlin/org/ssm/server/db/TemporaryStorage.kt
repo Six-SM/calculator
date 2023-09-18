@@ -7,8 +7,8 @@ import org.ssm.api.RequestsHistory
 import org.ktorm.database.Database
 import org.ktorm.dsl.*
 
-object TemporaryStorage {
-    val database = Database.connect("jdbc:postgresql://127.0.0.1:3071", user = "demo-user", password = "demo-password")
+class TemporaryStorage(url: String, username: String, password: String) {
+    val database = Database.connect(url, username, password)
 
     fun save(request: CalculationRequest, response: CalculationResponse): Int = 
         database.insert(RequestsHistory) {

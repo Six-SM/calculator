@@ -10,11 +10,11 @@ import org.ssm.api.CalculationRequest
 import org.ssm.server.db.TemporaryStorage
 import org.ssm.server.service.CalculationService
 
-fun Application.configureRouting() {
+fun Application.configureRouting(url: String, username: String, password: String) {
     routing {
         // Returns the calculation history in the format [{expr1, result1, id1, time1}, {expr2, result2, id2, time2}, ...]
-        get("/api/history" ) {
-            val response = json.encodeToString(TemporaryStorage.getHistory())
+        get("/api/history") {
+            val response = json.encodeToString(TemporaryStorage(url, username, password).getHistory())
             call.respond(response)
         }
 
@@ -22,7 +22,7 @@ fun Application.configureRouting() {
         post("/api/calculate") {
             val calculationRequest = call.receive<CalculationRequest>()
             val calculationResponse = CalculationService.calculate(calculationRequest.expression)
-            TemporaryStorage.save(calculationRequest, calculationResponse)
+            TemporaryStorage(url, username, password).save(calculationRequest, calculationResponse)
             call.respond(HttpStatusCode.OK, calculationResponse.result)
         }
     }

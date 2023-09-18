@@ -7,16 +7,31 @@ import io.ktor.server.testing.*
 import io.ktor.util.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.TestInstance;
 import org.ssm.api.CalculationListResponse
 import org.ssm.server.plugins.configureHTTP
 import org.ssm.server.plugins.configureRouting
 import org.ssm.server.plugins.configureSerialization
 import org.ssm.server.plugins.json
+import org.testcontainers.containers.PostgreSQLContainer;
 
-
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ApiTest {
     private fun decodeHistory(body: String): CalculationListResponse {
         return json.decodeFromString<CalculationListResponse>(body)
+    }
+
+    private val postgres: PostgreSQLContainer<*> = PostgreSQLContainer<Nothing>().apply {
+        withDatabaseName("x")
+        withUsername("y")
+        withPassword("z")
+    }
+
+    @BeforeAll
+    fun setUp() {
+        postgres.start();
     }
 
     @OptIn(InternalAPI::class)
@@ -24,7 +39,7 @@ class ApiTest {
     fun testGeneral() = testApplication {
         application {
             configureHTTP()
-            configureRouting()
+            configureRouting(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword())
             configureSerialization()
         }
 
