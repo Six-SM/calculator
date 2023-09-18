@@ -1,6 +1,9 @@
 package calculation
 
+import com.github.keelar.exprk.ExpressionException
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.ssm.server.service.CalculationService
 import java.math.BigDecimal
@@ -13,9 +16,14 @@ class CalculationTest {
             CalculationService.calculateResult("0"),
         )
 
-        assert(
-            CalculationService.calculateResult("0+").isFailure
-        )
+        Assertions.assertThrows(ExpressionException::class.java) {
+            CalculationService.calculateResult("0+").getOrThrow()
+        }
+
+
+        Assertions.assertThrows(ArithmeticException::class.java) {
+            CalculationService.calculateResult("1 / 0").getOrThrow()
+        }
     }
 
     @Test
@@ -52,7 +60,7 @@ class CalculationTest {
     fun testRounding() {
         val oneThird = CalculationService.calculateResult("1 / 3").getOrThrow()
 
-        assert(
+        assertTrue(
             CalculationService.formatResponse(oneThird).startsWith("0.3333")
         )
 
