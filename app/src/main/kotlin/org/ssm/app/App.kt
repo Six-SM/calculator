@@ -70,6 +70,25 @@ fun makeRequest(expression: String): String {
     return result //пока что так
 }
 
+@Composable
+
+fun drawTextOnButtons(it : Int) {
+    return Text(
+        text = symbols[it],
+        color = Color.Black,
+        style = if (!(symbols[it].all { char -> char.isDigit() })) {
+            TextStyle(fontSize = 23.sp)
+        } else {
+            TextStyle(fontSize = 20.sp)
+        },
+        textAlign = if (symbols[it] == "⌫") {
+            TextAlign.Start
+        } else {
+            TextAlign.Center
+        }
+    )
+}
+
 
 @Composable
 fun RunMain() {
@@ -171,20 +190,7 @@ fun RunMain() {
 
                     )
                     {
-                        Text(
-                            text = symbols[it],
-                            color = Color.Black,
-                            style = if (!(symbols[it].all { char -> char.isDigit() })) {
-                                TextStyle(fontSize = 23.sp)
-                            } else {
-                                TextStyle(fontSize = 20.sp)
-                            },
-                            textAlign = if (symbols[it] == "⌫") {
-                                TextAlign.Start
-                            } else {
-                                TextAlign.Center
-                            }
-                        )
+                        drawTextOnButtons(it)
                     }
                 }
             }
