@@ -16,6 +16,7 @@ import org.ssm.server.plugins.configureRouting
 import org.ssm.server.plugins.configureSerialization
 import org.ssm.server.plugins.json
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ApiTest {
@@ -23,7 +24,7 @@ class ApiTest {
         return json.decodeFromString<CalculationListResponse>(body)
     }
 
-    private val postgres: PostgreSQLContainer<*> = PostgreSQLContainer<Nothing>().apply {
+    private val postgres: PostgreSQLContainer<*> = PostgreSQLContainer(DockerImageName.parse("postgres")).apply {
         withDatabaseName("x")
         withUsername("y")
         withPassword("z")

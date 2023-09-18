@@ -8,7 +8,7 @@ import org.ktorm.database.Database
 import org.ktorm.dsl.*
 
 class TemporaryStorage(url: String, username: String, password: String) {
-    val database = Database.connect(url, username, password)
+    val database = Database.connect(url, user=username, password=password)
 
     fun save(request: CalculationRequest, response: CalculationResponse): Int = 
         database.insert(RequestsHistory) {
