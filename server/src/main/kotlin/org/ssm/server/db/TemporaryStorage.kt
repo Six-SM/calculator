@@ -3,17 +3,25 @@ package org.ssm.server.db
 import org.ssm.api.CalculationListResponse
 import org.ssm.api.CalculationRequest
 import org.ssm.api.CalculationResponse
+import org.ssm.api.RequestsHistory
+import org.ktorm.database.Database
+import org.ktorm.dsl.*
 
 object TemporaryStorage {
-    private val temporaryStorage = mutableListOf<CalculationListResponse.CalculationHistoryRequest>()
+    val database = Database.connect("jdbc:postgresql://127.0.0.1:3071", user = "demo-user", password = "demo-password")
 
-    fun save(request: CalculationRequest, response: CalculationResponse): Boolean =
-        temporaryStorage.add(CalculationListResponse.CalculationHistoryRequest(
-            request.expression,
-            response.result,
-            response.id,
-            response.timestamp
-        ))
+    fun save(request: CalculationRequest, response: CalculationResponse): Int = 
+        database.insert(RequestsHistory) {
+            set(it.expression, request.expression)
+            set(it.result, response.result)
+            set(it.id, response.id)
+            set(it.timestamp, response.timestamp)
+        }
 
-    fun getHistory(): CalculationListResponse = CalculationListResponse(temporaryStorage.sortedBy { it.timestamp })
+    fun getHistory(): CalculationListResponse = CalculationListResponse(database.from(RequestsHistory).select().map { row -> CalculationListResponse.CalculationHistoryRequest(
+                            row[RequestsHistory.expression] ?: "", 
+                            row[RequestsHistory.result] ?: "", 
+                            row[RequestsHistory.id] ?: "", 
+                            row[RequestsHistory.timestamp] ?: ""
+                        )}.sortedBy { it.timestamp }.toList())
 }

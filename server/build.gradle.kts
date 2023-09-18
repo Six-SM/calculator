@@ -32,5 +32,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.4.11")
     implementation("com.github.Keelar:ExprK:91fdabf")
 
+    implementation("org.ktorm:ktorm-core:3.6.0")
+
     testImplementation("io.ktor:ktor-server-tests-jvm")
 }
