@@ -1,12 +1,16 @@
 package org.ssm.server.service
 
 import com.github.keelar.exprk.Expressions
+import io.ktor.util.logging.*
 import org.ssm.api.CalculationResponse
 import java.math.BigDecimal
 import java.math.MathContext
 import java.math.RoundingMode
 
 object CalculationService {
+    private val logger: Logger =
+        KtorSimpleLogger("org.ssm.server.service.CalculationService")
+
     private val calculator: Expressions = Expressions()
         .setPrecision(256) // chosen arbitrary, should be enough
         .setRoundingMode(RoundingMode.HALF_EVEN)
@@ -56,6 +60,12 @@ object CalculationService {
         return if (result.isSuccess) {
             CalculationResponse(formatResponse(result.getOrThrow()))
         } else {
+            logger.warn(
+                "Expression \"{}\" was not evaluated (exception: {})",
+                expression,
+                result.exceptionOrNull().toString(),
+            )
+
             CalculationResponse("error")
         }
     }
