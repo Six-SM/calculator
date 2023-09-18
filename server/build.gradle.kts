@@ -1,6 +1,8 @@
 plugins {
     application
 
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ktor)
 }
@@ -10,6 +12,13 @@ application {
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+}
+
+
+tasks.shadowJar {
+    archiveFileName.set(project.name + "-shadow.jar")
+    archiveClassifier.set("")
+    archiveVersion.set("")
 }
 
 // TODO: move all these dependencies to libs.version.toml
