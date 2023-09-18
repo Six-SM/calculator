@@ -6,11 +6,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,7 +21,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import org.ssm.api.CalculationRequest
 import java.awt.Dimension
 
 val symbols = listOf(
@@ -53,7 +48,7 @@ val symbols = listOf(
 
 val operation_symbols = listOf('+', '-', '/', '*', ')', '(', '=')
 
-val previous_expressions = listOf(
+var recent_requests = mutableStateListOf(
     "aaa",
     "bbb",
     "21479",
@@ -78,10 +73,22 @@ val COLUMN_WIDTH = 400
 val LEFT_PADDING = 50
 val BUTTON_CALC_SIZE = 60
 
+
+fun updateRecentRequestList(expression: String, result: String) {
+
+
+    recent_requests.add(0, expression + " = $result")
+    //TODO: переприсваивание recent_requests из //List<CalculationHistoryRequest>
+
+}
+
 fun makeRequest(expression: String): String {
-    //TODO: отправляю запрос на сервер, передавая current_expression
-    CalculationRequest(expression)
-    return "25"
+    //TODO: отправляю запрос на сервер, передавая expression
+    // CalculationRequest(expression) (не пон, куда передавать)
+    updateRecentRequestList(expression, "25")
+    return "25" //пока что так
+
+
 }
 
 
@@ -130,8 +137,7 @@ fun RunMain() {
                                 val result = makeRequest(current_expression)
                                 if (result.all { it.isDigit() }) {
                                     current_expression += " = $result"
-                                }
-                                else {
+                                } else {
                                     current_expression = result
                                 }
 
@@ -212,7 +218,7 @@ fun RunMain() {
             modifier = Modifier.fillMaxSize()
                 .absolutePadding(left = 30.dp, right = 30.dp, top = 90.dp, bottom = BUTTON_CALC_SIZE.dp),
             content = {
-                items(previous_expressions.size) {
+                items(recent_requests.size) {
                     Button(
                         onClick = {}, //TODO
                         modifier = Modifier
@@ -223,7 +229,7 @@ fun RunMain() {
                         colors = ButtonDefaults.buttonColors(Color(0xFFF3E8D3)),
                     ) {
                         Text(
-                            previous_expressions[it],
+                            recent_requests[it],
                             fontSize = 25.sp,
                             color = Color(0xFF776E65)
                         )
