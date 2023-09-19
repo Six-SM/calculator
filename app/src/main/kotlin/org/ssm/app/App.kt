@@ -36,9 +36,7 @@ val symbols = listOf(
 
 val operationSymbols = listOf('+', '-', '/', '*', ')', '(', '=')
 
-var recentRequests = mutableStateListOf(
-    "MADE BY SIX SM-MASTERS"
-)
+var recentRequests = mutableStateListOf<String>()
 
 @Composable
 fun drawTextOnButtons(it: Int) {
@@ -60,7 +58,7 @@ fun drawTextOnButtons(it: Int) {
 
 
 @Composable
-fun runMain() {
+fun runMain(client: CalculatorClient) {
     var currentExpression by remember { mutableStateOf("") }
     var currentPosition by remember { mutableStateOf(0) }
 
@@ -101,7 +99,7 @@ fun runMain() {
                     Button(
                         onClick = {
                             val newCalculatorState = if (symbols[it] == "=") {
-                                    val newCalculatorState = handleEqualButton(CalculatorState(currentExpression, currentPosition))
+                                    val newCalculatorState = handleEqualButton(CalculatorState(currentExpression, currentPosition), client)
                                     recentRequests.add(0, newCalculatorState.expression)
                                     newCalculatorState
                                 } else if (symbols[it][0].isDigit() || (operationSymbols.contains(symbols[it][0]) && symbols[it].length == 1)) {
@@ -175,7 +173,7 @@ fun runMain() {
 
             Button(
                 onClick = {
-                    val newRecentRequests = updateRecentRequest()
+                    val newRecentRequests = updateRecentRequest(client)
                     recentRequests.clear()
                     recentRequests.addAll(newRecentRequests)
                 },
@@ -198,19 +196,21 @@ fun runMain() {
 
 @Composable
 @Preview
-fun app() {
+fun app(client: CalculatorClient) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = Color(0xFFF9F2E7),
     ) {
-        runMain()
+        runMain(client)
     }
 }
 
-fun main() = application {
+fun main(args: Array<String>) = application {
     val windowState = rememberWindowState(height = WINDOW_SIZE.first.dp, width = WINDOW_SIZE.second.dp)
+    val serverAddress = args.getOrNull(0) ?: error("Expected 1 argument: Address of host")
+    val client = CalculatorClient(serverAddress)
     Window(onCloseRequest = ::exitApplication, state = windowState, title = "SIX-SM Calculator") {
         window.minimumSize = Dimension(WINDOW_SIZE.second, WINDOW_SIZE.first)
-        app()
+        app(client)
     }
 }

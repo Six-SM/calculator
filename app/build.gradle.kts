@@ -16,6 +16,12 @@ repositories {
 dependencies {
     implementation(compose.desktop.currentOs)
     implementation(project(mapOf("path" to ":api")))
+    // TODO: move all these dependencies to libs.version.toml
+    implementation("io.ktor:ktor-client-core:${libs.versions.ktorVersion.get()}")
+    implementation("io.ktor:ktor-client-cio:${libs.versions.ktorVersion.get()}")
+    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:${libs.versions.ktorVersion.get()}")
+    implementation("io.ktor:ktor-client-content-negotiation:${libs.versions.ktorVersion.get()}")
+    implementation(project(":api"))
 }
 
 compose.desktop {
