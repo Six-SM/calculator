@@ -15,5 +15,5 @@ fun main() {
 fun Application.module() {
     configureHTTP()
     configureSerialization()
-    configureRouting()
+    configureRouting("jdbc:postgresql://127.0.0.1:3071", "demo-user", "demo-password")
 }
