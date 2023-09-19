@@ -36,9 +36,7 @@ val symbols = listOf(
 
 val operationSymbols = listOf('+', '-', '/', '*', ')', '(', '=')
 
-var recentRequests = mutableStateListOf(
-    "MADE BY SIX SCRUM-MASTERS"
-)
+var recentRequests = mutableStateListOf<String>()
 
 @Composable
 fun drawTextOnButtons(it: Int) {
