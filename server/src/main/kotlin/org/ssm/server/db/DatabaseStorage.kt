@@ -4,15 +4,15 @@ import org.ssm.api.CalculationListResponse
 import org.ssm.api.CalculationRequest
 import org.ssm.api.CalculationResponse
 import org.ssm.api.RequestsHistory
+import org.ssm.api.requestsHistoryCreateTable
 import org.ktorm.database.Database
 import org.ktorm.dsl.*
 
-class TemporaryStorage(url: String, username: String, password: String) {
+class DatabaseStorage(url: String, username: String, password: String) {
     val database = Database.connect(url, user=username, password=password)
 
     init {
-        val sql = "create table if not exists t_requests_history(id varchar primary key, expression varchar, result varchar, timestamp varchar);"
-        database.useConnection { conn -> conn.prepareStatement(sql).use { it.execute() } }
+        database.useConnection { conn -> conn.prepareStatement(requestsHistoryCreateTable).use { it.execute() } }
     }
 
     fun save(request: CalculationRequest, response: CalculationResponse): Int = 
@@ -28,5 +28,5 @@ class TemporaryStorage(url: String, username: String, password: String) {
                             row[RequestsHistory.result] ?: "", 
                             row[RequestsHistory.id] ?: "", 
                             row[RequestsHistory.timestamp] ?: ""
-                        )}.sortedBy { it.timestamp }.toList())
+                        )}.sortedByDescending { it.timestamp }.toList())
 }
