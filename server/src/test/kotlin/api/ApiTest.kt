@@ -84,10 +84,10 @@ class ApiTest {
         }.apply {
             val decoded = decodeHistory(bodyAsText())
             assertEquals(2, decoded.history.size)
-            assertEquals("1+1", decoded.history[0].expression)
-            assertEquals("2", decoded.history[0].result)
-            assertEquals("1+2", decoded.history[1].expression)
-            assertEquals("3", decoded.history[1].result)
+            assertEquals("1+1", decoded.history[1].expression)
+            assertEquals("2", decoded.history[1].result)
+            assertEquals("1+2", decoded.history[0].expression)
+            assertEquals("3", decoded.history[0].result)
         }
     }
 }
